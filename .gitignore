@@ -1,0 +1,10 @@
+db.sqlite3
+/**/migrations/
+/**/__pycache__/
+.idea/
+parser/__pycache__
+parser/settings.py/__pycache_
+parser/test.json
+parser/dbs
+parser/logs
+venv/
