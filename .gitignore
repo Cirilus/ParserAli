@@ -7,4 +7,4 @@ parser/settings.py/__pycache_
 parser/test.json
 parser/dbs
 parser/logs
-venv/
+*env/
