@@ -42,7 +42,7 @@ def take_parameters(data):
 
 
 def take_additional_parameters(data):
-    data = data['widgets'][2]['children'][0]['children'][0]['children'][0]['children'][6]['children'][0]['children'][3][
+    data = data['widgets'][2]['children'][0]['children'][0]['children'][0]['children'][7]['children'][0]['children'][3][
         'props']['html']
     return data
 
@@ -87,7 +87,6 @@ class AliSpider(scrapy.Spider):
         super(AliSpider, self).__init__(*args, **kwargs)
 
     def parse(self, response, **kwargs):
-
         page_api = str(response.css('#__AER_DATA__::text').get())
         page_api = data_to_json(page_api)
         additional_parameters = take_additional_parameters(page_api)
@@ -99,6 +98,7 @@ class AliSpider(scrapy.Spider):
         # prices = take_prices(product_api)
         # parameters = merge_parameters_prices(parameters, prices)
         unique_id = str(uuid4())
+
         item = {
             'название': product_api['name'],
             'картинки': images,
@@ -112,5 +112,4 @@ class AliSpider(scrapy.Spider):
         product['images'] = item['картинки']
         product['parameters'] = item['параметры']
         product['additional_parameters'] = item['дополнительные параметры']
-
         yield product

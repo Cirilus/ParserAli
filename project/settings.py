@@ -14,7 +14,8 @@ SECRET_KEY = env.str('SECRET_KEY')
 
 DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = ['parserali.me', 'localhost']
+# ALLOWED_HOSTS = ['parserali.me', 'localhost']
+ALLOWED_HOSTS = ["*"]
 
 
 INSTALLED_APPS = [
