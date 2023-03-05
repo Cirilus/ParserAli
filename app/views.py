@@ -2,12 +2,14 @@ from urllib.parse import urlparse
 from uuid import uuid4
 
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import ListModelMixin
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from scrapyd_api import ScrapydAPI
+from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import ProductSerializer, PartProductSerializer
 from .models import Product
@@ -24,14 +26,14 @@ def is_valid_url(url):
         return False
     return True
 
-
+@method_decorator(name="list", decorator=swagger_auto_schema(operation_summary="return info about all products"))
 class PartProductsView(GenericViewSet, ListModelMixin):
     serializer_class = PartProductSerializer
     queryset = Product.objects.all()
 
+@method_decorator(name="list", decorator=swagger_auto_schema(operation_summary="return the full product's info by id "))
 class ProductsView(GenericViewSet, ListModelMixin):
     serializer_class = ProductSerializer
-
     def get_queryset(self):
         id = self.kwargs['id']
         try:
