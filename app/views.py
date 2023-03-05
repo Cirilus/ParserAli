@@ -51,7 +51,7 @@ class ParseProduct(APIView):
         domain = urlparse(url).netloc
         unique_id = str(uuid4())
 
-        if domain != "aliexpress.ru":
+        if domain != "aliexpress.ru" and domain != "m.aliexpress.ru":
             return JsonResponse({'error': "Domain is invalid"})
 
         settings = {
