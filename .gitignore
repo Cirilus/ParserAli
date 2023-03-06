@@ -8,3 +8,5 @@ parser/test.json
 parser/dbs
 parser/logs
 *env/
+parser/twistd.pid
+
