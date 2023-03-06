@@ -28,7 +28,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-    'drf_yasg',
+    'drf_spectacular',
+    "drf_spectacular_sidecar",
 
     'app.apps.AppConfig',
 
@@ -120,6 +121,22 @@ STATIC_URL = env.str('STATIC_URL', default='static/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'ParseAli Api',
+    'DESCRIPTION': '',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+}
 
 #CORS_ALLOW_HEADERS = "*"
 #CORS_ALLOWED_ORIGINS = [

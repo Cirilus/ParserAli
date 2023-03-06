@@ -17,7 +17,8 @@ Django==4.1.7
 django-cors-headers==3.14.0
 django-environ==0.9.0
 djangorestframework==3.14.0
-drf-yasg==1.21.5
+drf-spectacular==0.26.0
+drf-spectacular-sidecar==2023.3.1
 environ==1.0
 exceptiongroup==1.1.0
 executing==1.2.0
@@ -33,6 +34,7 @@ itemloaders==1.0.6
 itypes==1.2.0
 Jinja2==3.1.2
 jmespath==1.0.1
+jsonschema==4.17.3
 lazy-object-proxy==1.9.0
 lxml==4.9.2
 MarkupSafe==2.1.2
@@ -53,10 +55,12 @@ pycparser==2.21
 PyDispatcher==2.0.7
 pylint==2.16.3
 pyOpenSSL==23.0.0
+pyrsistent==0.19.3
 PySocks==1.7.1
 python-dateutil==2.8.2
 python-scrapyd-api==2.1.2
 pytz==2022.7.1
+PyYAML==6.0
 queuelib==1.6.2
 requests==2.28.2
 requests-file==1.5.1
