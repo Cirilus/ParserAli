@@ -5,13 +5,14 @@ from rest_framework import serializers
 class ProductFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ('unique_id', 'name', 'images', 'parameters', 'additional_parameters')
 
 
 class ProductBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'images']
+
 
 class ParseSerializer(serializers.Serializer):
     task_id = serializers.CharField()
