@@ -178,8 +178,8 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-
-#CORS_ALLOW_HEADERS = "*"
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = "*"
 #CORS_ALLOWED_ORIGINS = [
   #'http://localhost:8080',
   #'http://localhost:8081',
