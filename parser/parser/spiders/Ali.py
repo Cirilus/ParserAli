@@ -32,7 +32,7 @@ def take_parameters(data):
     data = data['skuInfo']['propertyList']
     parameters = []
     for info in data:
-        parameter = {'name': info['name']}
+        parameter = {'title': info['name']}
         values = []
         for value in info['values']:
             values.append({'name': value['displayName'], 'id': value['id']})
