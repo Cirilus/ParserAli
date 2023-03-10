@@ -2,7 +2,7 @@ from urllib.parse import urlparse
 from uuid import uuid4
 from django.http import JsonResponse
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -33,7 +33,7 @@ class ProductPagination(PageNumberPagination):
     max_page_size = 100
 
 
-@extend_schema(tags=["product"], operation_id="allProducts",
+@extend_schema(tags=["product"],
                summary="return name and iamges of all products that ralated to user")
 class ProductsView(GenericViewSet, ListModelMixin):
     serializer_class = ProductBaseSerializer
@@ -41,8 +41,17 @@ class ProductsView(GenericViewSet, ListModelMixin):
     pagination_class = ProductPagination
 
 
-@extend_schema(tags=["product"], operation_id="DetailProduct", summary="return all info about product by id")
-class ProductDetailView(GenericViewSet, RetrieveModelMixin,
+@extend_schema_view(
+    retrieve=extend_schema(
+        tags=['product'],
+        summary="return all info about product by id",
+    ),
+    delete=extend_schema(
+        responses=None,
+    )
+)
+class ProductDetailView(GenericViewSet,
+                        RetrieveModelMixin,
                         DestroyModelMixin):
     serializer_class = ProductFullSerializer
 
@@ -85,3 +94,4 @@ class ParseProduct(APIView):
                                 settings=settings,
                                 url=url, domain=domain)
         return JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started'})
+

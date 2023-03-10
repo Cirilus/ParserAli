@@ -112,4 +112,6 @@ class AliSpider(scrapy.Spider):
         product['images'] = item['картинки']
         product['parameters'] = item['параметры']
         product['additional_parameters'] = item['дополнительные параметры']
+        product['from_whom'] = "AliExpress"
+
         yield product
