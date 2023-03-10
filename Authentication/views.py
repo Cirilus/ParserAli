@@ -1,16 +1,30 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.generics import CreateAPIView
+from rest_framework import permissions
 
-from .serializers import UserSerializer
+from django.contrib.auth import get_user_model
+from .serializers import UserSerializer, CreateUserSerializer
+
 from .models import CustomUser
 
+
 @extend_schema(summary="Return the info about register user")
-class UserView(GenericViewSet, ListModelMixin):
+class UserView(GenericViewSet, RetrieveModelMixin):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, ]
 
-    def get_queryset(self):
+    def get_object(self):
+        return self.request.user
 
-        return [self.request.user]
+
+class CreateUserView(CreateAPIView):
+    model = get_user_model()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = CreateUserSerializer
+
+

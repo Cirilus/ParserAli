@@ -2,14 +2,14 @@ from urllib.parse import urlparse
 from uuid import uuid4
 from django.http import JsonResponse
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import DestroyModelMixin, ListModelMixin, RetrieveModelMixin
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from scrapyd_api import ScrapydAPI
-from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
 from .serializers import ProductFullSerializer, ProductBaseSerializer, ParseSerializer
 from .models import Product
@@ -28,21 +28,25 @@ def is_valid_url(url):
 
 @extend_schema(tags=["product"], operation_id="allProducts",
                summary="return name and iamges of all products that ralated to user")
-class ProductsAllView(GenericViewSet, ListModelMixin):
+class ProductsView(GenericViewSet, ListModelMixin):
     serializer_class = ProductBaseSerializer
     queryset = Product.objects.all()
 
 
 @extend_schema(tags=["product"], operation_id="fullProduct", summary="return all info about product by id")
-class ProductFullView(GenericViewSet, ListModelMixin):
+class ProductDetailView(GenericViewSet, RetrieveModelMixin,
+                        DestroyModelMixin):
     serializer_class = ProductFullSerializer
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def get_object(self):
         id = self.kwargs['id']
-        try:
-            return Product.objects.filter(pk=id)
-        except Product.DoesNotExist:
-            return Product.objects.last()
+        return get_object_or_404(Product, pk=id)
 
 
 class ParseProduct(APIView):
