@@ -1,4 +1,4 @@
-from .models import Product
+from .models import Product, Project, ProjectProduct
 from rest_framework import serializers
 
 
@@ -18,3 +18,24 @@ class ParseSerializer(serializers.Serializer):
     task_id = serializers.CharField()
     unique_id = serializers.CharField()
     status = serializers.CharField()
+
+
+class ProjectProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectProduct
+        fields = ("title", "parameters")
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ("id", "title")
+
+
+class DetailProjectSerializer(serializers.ModelSerializer):
+    products = ProjectProductSerializer(many=True)
+    class Meta:
+        model = Project
+        fields = ("id", "title", "products")
+
+

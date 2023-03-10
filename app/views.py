@@ -12,8 +12,10 @@ from django.core.exceptions import ValidationError
 from scrapyd_api import ScrapydAPI
 from django.shortcuts import get_object_or_404
 
-from .serializers import ProductFullSerializer, ProductBaseSerializer, ParseSerializer
-from .models import Product
+from .serializers import ProductFullSerializer, \
+    ProductBaseSerializer, ParseSerializer, \
+    ProjectSerializer, DetailProjectSerializer
+from .models import Product, Project
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -46,11 +48,12 @@ class ProductsView(GenericViewSet, ListModelMixin):
         tags=['product'],
         summary="return all info about product by id",
     ),
-    delete=extend_schema(
-        responses=None,
+    destroy=extend_schema(
+        tags=['product'],
+        summary="delete the object",
     )
 )
-class ProductDetailView(GenericViewSet,
+class DetailProductView(GenericViewSet,
                         RetrieveModelMixin,
                         DestroyModelMixin):
     serializer_class = ProductFullSerializer
@@ -62,8 +65,27 @@ class ProductDetailView(GenericViewSet,
         return self.destroy(request, *args, **kwargs)
 
     def get_object(self):
-        id = self.kwargs['id']
-        return get_object_or_404(Product, pk=id)
+        pk = self.kwargs['pk']
+        return get_object_or_404(Product, pk=pk)
+
+
+@extend_schema(tags=["project"],
+               summary="return id and title of all projects that ralated to user")
+class ProjectView(GenericViewSet,
+                  ListModelMixin):
+    serializer_class = ProjectSerializer
+    queryset = Project.objects.all()
+
+
+@extend_schema(tags=["project"],
+               summary="return title and products of all products that ralated to user")
+class DetailProjectView(GenericViewSet,
+                        RetrieveModelMixin):
+    serializer_class = DetailProjectSerializer
+
+    def get_object(self):
+        pk = self.kwargs['pk']
+        return get_object_or_404(Project, pk=pk)
 
 
 class ParseProduct(APIView):

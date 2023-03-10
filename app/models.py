@@ -1,13 +1,13 @@
 from django.db import models
-
+from jsonfield import JSONField
 from Authentication.models import CustomUser
 
 
 class Product(models.Model):
     unique_id = models.CharField(max_length=100, null=True)
     name = models.TextField()
-    images = models.TextField()
-    parameters = models.TextField()
+    images = JSONField()
+    parameters = JSONField()
     additional_parameters = models.TextField()
     from_whom = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="products", null=True, blank=True)
@@ -26,7 +26,7 @@ class Project(models.Model):
 
 class ProjectProduct(models.Model):
     title = models.TextField()
-    parameters = models.TextField()
+    parameters = JSONField()
     from_whom = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="products")
 
