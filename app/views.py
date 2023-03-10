@@ -3,6 +3,7 @@ from uuid import uuid4
 from django.http import JsonResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import DestroyModelMixin, ListModelMixin, RetrieveModelMixin
@@ -26,14 +27,21 @@ def is_valid_url(url):
     return True
 
 
+class ProductPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'limits'
+    max_page_size = 100
+
+
 @extend_schema(tags=["product"], operation_id="allProducts",
                summary="return name and iamges of all products that ralated to user")
 class ProductsView(GenericViewSet, ListModelMixin):
     serializer_class = ProductBaseSerializer
     queryset = Product.objects.all()
+    pagination_class = ProductPagination
 
 
-@extend_schema(tags=["product"], operation_id="fullProduct", summary="return all info about product by id")
+@extend_schema(tags=["product"], operation_id="DetailProduct", summary="return all info about product by id")
 class ProductDetailView(GenericViewSet, RetrieveModelMixin,
                         DestroyModelMixin):
     serializer_class = ProductFullSerializer
