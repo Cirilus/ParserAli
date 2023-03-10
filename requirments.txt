@@ -35,6 +35,7 @@ itemloaders==1.0.6
 itypes==1.2.0
 Jinja2==3.1.2
 jmespath==1.0.1
+jsonfield==3.1.0
 jsonschema==4.17.3
 lazy-object-proxy==1.9.0
 lxml==4.9.2
