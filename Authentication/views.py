@@ -35,6 +35,7 @@ class UpdateUserView(UpdateAPIView):
         permissions.IsAuthenticated
     ]
     serializer_class = UpdateUserSerializer
+    http_method_names = ['patch']
 
     def get_object(self):
         return self.request.user

@@ -6,7 +6,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import DestroyModelMixin, ListModelMixin, RetrieveModelMixin
+from rest_framework.mixins import DestroyModelMixin, \
+    ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from scrapyd_api import ScrapydAPI
@@ -51,12 +52,14 @@ class ProductsView(GenericViewSet, ListModelMixin):
     destroy=extend_schema(
         tags=['product'],
         summary="delete the object",
-    )
+    ),
 )
 class DetailProductView(GenericViewSet,
                         RetrieveModelMixin,
-                        DestroyModelMixin):
+                        DestroyModelMixin,
+                        UpdateModelMixin):
     serializer_class = ProductFullSerializer
+    http_method_names = ["patch", "get", "delete"]
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -64,13 +67,16 @@ class DetailProductView(GenericViewSet,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
     def get_object(self):
         pk = self.kwargs['pk']
         return get_object_or_404(Product, pk=pk)
 
 
 @extend_schema(tags=["project"],
-               summary="return id and title of all projects that ralated to user")
+               summary="return id and title of all projects that related to user")
 class ProjectView(GenericViewSet,
                   ListModelMixin):
     serializer_class = ProjectSerializer
@@ -78,7 +84,7 @@ class ProjectView(GenericViewSet,
 
 
 @extend_schema(tags=["project"],
-               summary="return title and products of all products that ralated to user")
+               summary="return title and products of all projects that related to user")
 class DetailProjectView(GenericViewSet,
                         RetrieveModelMixin):
     serializer_class = DetailProjectSerializer
