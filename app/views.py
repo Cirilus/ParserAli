@@ -7,7 +7,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import DestroyModelMixin, \
-    ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+    ListModelMixin, RetrieveModelMixin, \
+    UpdateModelMixin, CreateModelMixin
+from rest_framework.generics import CreateAPIView
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from scrapyd_api import ScrapydAPI
@@ -15,8 +17,9 @@ from django.shortcuts import get_object_or_404
 
 from .serializers import ProductFullSerializer, \
     ProductBaseSerializer, ParseSerializer, \
-    ProjectSerializer, DetailProjectSerializer
-from .models import Product, Project
+    ProjectSerializer, DetailProjectSerializer, \
+    ProjectProductSerializer
+from .models import Product, Project, ProjectProduct
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -51,8 +54,12 @@ class ProductsView(GenericViewSet, ListModelMixin):
     ),
     destroy=extend_schema(
         tags=['product'],
-        summary="delete the object",
+        summary="delete the product",
     ),
+    partial_update=extend_schema(
+        tags=['product'],
+        summary="update the product"
+    )
 )
 class DetailProductView(GenericViewSet,
                         RetrieveModelMixin,
@@ -60,15 +67,6 @@ class DetailProductView(GenericViewSet,
                         UpdateModelMixin):
     serializer_class = ProductFullSerializer
     http_method_names = ["patch", "get", "delete"]
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
-
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
 
     def get_object(self):
         pk = self.kwargs['pk']
@@ -78,20 +76,51 @@ class DetailProductView(GenericViewSet,
 @extend_schema(tags=["project"],
                summary="return id and title of all projects that related to user")
 class ProjectView(GenericViewSet,
-                  ListModelMixin):
+                  ListModelMixin,
+                  CreateModelMixin):
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        request.data['user'] = request.user.pk
+        return super().create(request, *args, **kwargs)
 
-@extend_schema(tags=["project"],
-               summary="return title and products of all projects that related to user")
+
+@extend_schema_view(
+    retrieve=extend_schema(
+        tags=['project'],
+        summary="return all products of current project",
+    ),
+    destroy=extend_schema(
+        tags=['project'],
+        summary="delete the project",
+    ),
+)
 class DetailProjectView(GenericViewSet,
-                        RetrieveModelMixin):
+                        RetrieveModelMixin,
+                        DestroyModelMixin):
     serializer_class = DetailProjectSerializer
 
     def get_object(self):
         pk = self.kwargs['pk']
         return get_object_or_404(Project, pk=pk)
+
+
+@extend_schema_view(
+    create=extend_schema(
+        tags=['project'],
+        summary="return all products of current project",
+    ),
+    destroy=extend_schema(
+        tags=['project'],
+        summary="delete the product from project",
+    ),
+)
+class ProjectProduct(GenericViewSet,
+                     CreateModelMixin,
+                     DestroyModelMixin):
+    serializer_class = ProjectProductSerializer
+    model = ProjectProduct
 
 
 class ParseProduct(APIView):
@@ -122,4 +151,3 @@ class ParseProduct(APIView):
                                 settings=settings,
                                 url=url, domain=domain)
         return JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started'})
-

@@ -17,7 +17,7 @@ class Product(models.Model):
 
 
 class Project(models.Model):
-    title = models.TextField()
+    title = models.TextField(blank=False, null=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="projects")
 
     def __str__(self):
@@ -25,9 +25,10 @@ class Project(models.Model):
 
 
 class ProjectProduct(models.Model):
-    title = models.TextField()
+    title = models.TextField(blank=False, null=False)
     parameters = JSONField()
     from_whom = models.TextField()
+    count = models.IntegerField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="products")
 
     def __str__(self):
