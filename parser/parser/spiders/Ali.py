@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from uuid import uuid4
 
 import scrapy
@@ -42,32 +43,20 @@ def take_parameters(data):
 
 
 def take_additional_parameters(data):
-    data = data['widgets'][2]['children'][0]['children'][0]['children'][0]['children'][7]['children'][0]['children'][3][
-        'props']['html']
+    try:
+        data = data['widgets'][2]['children'][0]['children'][0]['children'][0]['children'][7]['children'][0]['children'][3][
+            'props']['html']
+    except Exception as e:
+        data = data['widgets'][2]['children'][0]['children'][0]['children'][0]['children'][6]['children'][0]['children'][3][
+            'props']['html']
     return data
 
 
 def take_prices(data):
     data = data['skuInfo']['priceList']
-    prices = []
-    for info in data:
-        price = {
-            'price': info['activityAmount']['value'],
-            'ids': info['skuPropIds'].split(',')
-        }
-        prices.append(price)
-
+    prices = [price['activityAmount']['value'] for price in data]
+    prices = list(OrderedDict.fromkeys(prices))
     return prices
-
-
-def merge_parameters_prices(parameters, prices):
-    product_ids = {'product': [i['id'] for i in parameters[2]['info']]}
-    prices_ids = [pd.Series(i['ids']) for i in prices]
-    product_ids = pd.DataFrame(product_ids)
-    prices_ids = pd.DataFrame(prices_ids)
-    df = prices_ids.join(product_ids, how='left')
-    df.to_csv('test.csv')
-    return None
 
 
 class AliSpider(scrapy.Spider):
@@ -95,8 +84,7 @@ class AliSpider(scrapy.Spider):
 
         images = take_images(product_api)
         parameters = take_parameters(product_api)
-        # prices = take_prices(product_api)
-        # parameters = merge_parameters_prices(parameters, prices)
+        prices = take_prices(product_api)
         unique_id = str(uuid4())
 
         item = {
@@ -104,6 +92,7 @@ class AliSpider(scrapy.Spider):
             'картинки': images,
             'параметры': parameters,
             'дополнительные параметры': additional_parameters,
+            'цена': prices
         }
 
         product = ProductItem()
@@ -111,6 +100,7 @@ class AliSpider(scrapy.Spider):
         product['name'] = item['название']
         product['images'] = item['картинки']
         product['parameters'] = item['параметры']
+        product['prices'] = item['цена']
         product['additional_parameters'] = item['дополнительные параметры']
         product['from_whom'] = "AliExpress"
 
