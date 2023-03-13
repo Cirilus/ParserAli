@@ -5,11 +5,12 @@ from rest_framework import serializers
 class ProductFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('unique_id', 'name', 'images', 'parameters', 'additional_parameters', 'from_whom')
+        fields = ('unique_id', 'name', 'images','from_whom', "prices", 'parameters', 'additional_parameters',)
         extra_kwargs = {
             'unique_id': {'read_only': True},
             'images': {'read_only': True},
             'additional_parameters': {'read_only': True},
+            'prices': {'read_only': True},
         }
 
 
