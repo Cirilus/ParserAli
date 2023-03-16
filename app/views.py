@@ -109,18 +109,25 @@ class DetailProjectView(GenericViewSet,
 @extend_schema_view(
     create=extend_schema(
         tags=['project'],
-        summary="return all products of current project",
+        summary="Create the product of project",
     ),
     destroy=extend_schema(
         tags=['project'],
         summary="delete the product from project",
     ),
+    partial_update=extend_schema(
+        tags=['project'],
+        summary="Update the product of project"
+    )
+
 )
 class ProjectProduct(GenericViewSet,
                      CreateModelMixin,
-                     DestroyModelMixin):
+                     DestroyModelMixin,
+                     UpdateModelMixin):
     serializer_class = ProjectProductSerializer
     model = ProjectProduct
+    http_method_names = ["patch", "post", "delete"]
 
 
 class ParseProduct(APIView):
