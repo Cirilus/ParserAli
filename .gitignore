@@ -9,4 +9,5 @@ parser/dbs
 parser/logs
 *env/
 parser/twistd.pid
+testApi.http
 

@@ -20,6 +20,8 @@ from .serializers import ProductFullSerializer, \
     ProjectSerializer, DetailProjectSerializer, \
     ProjectProductSerializer
 from .models import Product, Project, ProjectProduct
+from rest_framework import permissions
+
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -43,8 +45,12 @@ class ProductPagination(PageNumberPagination):
                summary="return name and iamges of all products that ralated to user")
 class ProductsView(GenericViewSet, ListModelMixin):
     serializer_class = ProductBaseSerializer
-    queryset = Product.objects.all()
     pagination_class = ProductPagination
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        products = Product.objects.filter(user=self.request.user)
+        return products
 
 
 @extend_schema_view(
@@ -66,6 +72,7 @@ class DetailProductView(GenericViewSet,
                         DestroyModelMixin,
                         UpdateModelMixin):
     serializer_class = ProductFullSerializer
+    permission_classes = [permissions.IsAuthenticated]
     http_method_names = ["patch", "get", "delete"]
 
     def get_object(self):
@@ -79,7 +86,11 @@ class ProjectView(GenericViewSet,
                   ListModelMixin,
                   CreateModelMixin):
     serializer_class = ProjectSerializer
-    queryset = Project.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        projects = Project.objects.filter(user=self.request.user)
+        return projects
 
     def create(self, request, *args, **kwargs):
         request.data['user'] = request.user.pk
@@ -100,6 +111,7 @@ class DetailProjectView(GenericViewSet,
                         RetrieveModelMixin,
                         DestroyModelMixin):
     serializer_class = DetailProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         pk = self.kwargs['pk']
@@ -128,9 +140,11 @@ class ProjectProduct(GenericViewSet,
     serializer_class = ProjectProductSerializer
     model = ProjectProduct
     http_method_names = ["patch", "post", "delete"]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ParseProduct(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     @extend_schema(tags=["scrape"],
                    parameters=[OpenApiParameter(name='url', type=OpenApiTypes.STR, location=OpenApiParameter.PATH)],
                    responses=ParseSerializer,
@@ -156,5 +170,7 @@ class ParseProduct(APIView):
 
         task = scrapyd.schedule('default', 'Ali',
                                 settings=settings,
-                                url=url, domain=domain)
+                                url=url, domain=domain,
+                                kwargs=self.request.user.pk)
+
         return JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started'})
