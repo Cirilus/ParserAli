@@ -23,9 +23,6 @@ class UserView(GenericViewSet, RetrieveModelMixin):
 @extend_schema(summary="Register an user")
 class CreateUserView(CreateAPIView):
     model = get_user_model()
-    permission_classes = [
-        permissions.AllowAny
-    ]
     serializer_class = CreateUserSerializer
 
 

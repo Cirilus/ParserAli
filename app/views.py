@@ -80,8 +80,16 @@ class DetailProductView(GenericViewSet,
         return get_object_or_404(Product, pk=pk)
 
 
-@extend_schema(tags=["project"],
-               summary="return id and title of all projects that related to user")
+@extend_schema_view(
+    list=extend_schema(
+        tags=['project'],
+        summary="return id and title of all projects that related to user",
+    ),
+    create=extend_schema(
+        tags=['project'],
+        summary="create the project",
+    ),
+)
 class ProjectView(GenericViewSet,
                   ListModelMixin,
                   CreateModelMixin):

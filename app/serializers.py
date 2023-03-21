@@ -41,7 +41,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ("id", "title", "user")
         extra_kwargs = {
             'id': {'read_only': True},
-            'user': {'write_only': True},
         }
 
 
