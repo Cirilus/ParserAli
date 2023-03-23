@@ -29,9 +29,10 @@ class ParseSerializer(serializers.Serializer):
 class ProjectProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectProduct
-        fields = ("title", "parameters", "from_whom", "count", "project")
+        fields = ("title", "parameters", "from_whom", "count", "project", "price")
         extra_kwargs = {
             'project': {'write_only': True},
+            'price': {'write_only': True},
         }
 
 
