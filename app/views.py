@@ -146,7 +146,7 @@ class ProjectProduct(GenericViewSet,
                      DestroyModelMixin,
                      UpdateModelMixin):
     serializer_class = ProjectProductSerializer
-    model = ProjectProduct
+    queryset = ProjectProduct
     http_method_names = ["patch", "post", "delete"]
     permission_classes = [permissions.IsAuthenticated]
 
