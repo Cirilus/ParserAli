@@ -1,9 +1,11 @@
+import json
 from urllib.parse import urlparse
 from uuid import uuid4
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import DestroyModelMixin, \
@@ -12,6 +14,7 @@ from rest_framework.mixins import DestroyModelMixin, \
 from rest_framework.generics import CreateAPIView
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from rest_pandas import PandasSimpleView
 from scrapyd_api import ScrapydAPI
 from django.shortcuts import get_object_or_404
 
@@ -21,6 +24,7 @@ from .serializers import ProductFullSerializer, \
     ProjectProductSerializer
 from .models import Product, Project, ProjectProduct
 from rest_framework import permissions
+import pandas as pd
 
 
 scrapyd = ScrapydAPI('http://localhost:6800')
@@ -141,7 +145,7 @@ class DetailProjectView(GenericViewSet,
     )
 
 )
-class ProjectProduct(GenericViewSet,
+class ProjectProductView(GenericViewSet,
                      CreateModelMixin,
                      DestroyModelMixin,
                      UpdateModelMixin):
@@ -149,6 +153,20 @@ class ProjectProduct(GenericViewSet,
     queryset = ProjectProduct
     http_method_names = ["patch", "post", "delete"]
     permission_classes = [permissions.IsAuthenticated]
+
+
+class SendCsvView(APIView):
+    serializer_class = ProjectProductSerializer
+    def get(self, request):
+        products = ProjectProduct.objects.all()
+        products = self.serializer_class(products, many=True).data
+        df = pd.DataFrame(products)
+        csv = df.to_csv()
+        response = HttpResponse(csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="data.csv"'
+
+
+        return response
 
 
 class ParseProduct(APIView):
