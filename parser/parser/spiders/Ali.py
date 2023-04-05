@@ -85,7 +85,7 @@ class AliSpider(scrapy.Spider):
         page_api = str(response.css('#__AER_DATA__::text').get())
         page_api = data_to_json(page_api)
         additional_parameters = take_additional_parameters(page_api)
-        product_api = page_api['widgets'][1]['children'][0]['children'][0]['children'][0]['children'][0]['props']
+        product_api = page_api['widgets'][1]['children'][0]['children'][0]['children'][0]['children'][0]['children'][0]['props']
         images = take_images(product_api)
         parameters = take_parameters(product_api)
         prices = take_prices(product_api)
