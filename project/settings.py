@@ -179,6 +179,12 @@ SIMPLE_JWT = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = (
+    "content-disposition"
+)
+CORS_EXPOSE_HEADERS = [
+    "content-disposition"
+]
 #CORS_ALLOW_HEADERS = "*"
 #CORS_ALLOWED_ORIGINS = [
   #'http://localhost:8080',
