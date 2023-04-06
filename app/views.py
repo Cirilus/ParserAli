@@ -156,15 +156,18 @@ class ProjectProductView(GenericViewSet,
 
 
 class SendCsvView(APIView):
-    serializer_class = ProjectProductSerializer
-    def get(self, request):
-        products = ProjectProduct.objects.all()
-        products = self.serializer_class(products, many=True).data
+    serializer_class = DetailProjectSerializer
+
+    @extend_schema(tags=["project"],
+                   summary="Need the id of project. Return file")
+    def get(self, request, id):
+        project = Project.objects.all().get(pk=id)
+        project = self.serializer_class(project).data
+        products = project['products']
         df = pd.DataFrame(products)
         csv = df.to_csv()
         response = HttpResponse(csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="data.csv"'
-
 
         return response
 

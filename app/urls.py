@@ -15,5 +15,5 @@ router.register(r'product_project', ProjectProductView, basename="create_project
 urlpatterns = [
     path('scrape/', ParseProduct.as_view(), name="scrape_data"),
     path("", include(router.urls)),
-    path("csv/", SendCsvView.as_view(), name="cvs_loader")
+    path("csv/<int:id>/", SendCsvView.as_view(), name="cvs_loader")
 ]
