@@ -27,13 +27,17 @@ class ParseSerializer(serializers.Serializer):
 
 
 class ProjectProductSerializer(serializers.ModelSerializer):
+    full_price = serializers.SerializerMethodField(read_only=True)
+
+    def get_full_price(self, instance):
+        return instance.price * instance.count
+
     class Meta:
         model = ProjectProduct
-        fields = ("id", "title", "parameters", "from_whom", "count", "project", "price")
+        fields = ("id", "title", "parameters", "from_whom", "count", "project", "price", "full_price")
         extra_kwargs = {
             'id': {'read_only':True},
             'project': {'write_only': True},
-            'price': {'write_only': True},
         }
 
 

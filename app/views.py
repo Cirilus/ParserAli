@@ -165,6 +165,7 @@ class SendCsvView(APIView):
         project = self.serializer_class(project).data
         products = project['products']
         df = pd.DataFrame(products)
+        df["full_price"] = df["price"] * df["count"]
         csv = df.to_csv()
         response = HttpResponse(csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="data.csv"'
@@ -197,9 +198,11 @@ class ParseProduct(APIView):
             'USER_AGENT': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
         }
 
+        print(self.request.user.pk)
+
         task = scrapyd.schedule('default', 'Ali',
                                 settings=settings,
                                 url=url, domain=domain,
-                                kwargs=self.request.user.pk)
+                                user=self.request.user.pk)
 
         return JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started'})

@@ -45,21 +45,13 @@ def take_parameters(data):
 
 
 def take_additional_parameters(data):
-    # print(data['widgets'][1]['children'][0]['children'][0]['children'][0]['children'][0]['children'][5]['children'][0]['children'][4]['children'][0]['children'][3]['children'][0])
-    # try:
-    #     data = data['widgets'][1]['children'][0]['children'][0]['children'][0]['children'][7]['children'][0]['children'][3][
-    #         'props']['html']
-    # except Exception as e:
-    #     data = data['widgets'][1]['children'][0]['children'][0]['children'][0]['children'][6]['children'][0]['children'][3][
-    #         'props']['html']
-    data = ''
+    data = data["widgets"][2]["children"][0]["children"][0]["children"][0]["children"][0]["children"][0]["children"][7]["children"][0]["children"][3]['props']["html"]
     return data
 
 
 def take_prices(data):
     data = data['skuInfo']['priceList']
-    prices = [price['activityAmount']['value'] for price in data]
-    prices = list(OrderedDict.fromkeys(prices))
+    prices = [(price['skuPropIds'], price['activityAmount']['value']) for price in data]
     return prices
 
 
@@ -70,10 +62,9 @@ class AliSpider(scrapy.Spider):
         self.url = kwargs.get('url')
         self.domain = kwargs.get('domain')
         self.unique_id = kwargs.get("_job")
-        self.user = kwargs.get("kwargs")
+        self.user = kwargs.get("user")
         self.start_urls = [self.url]
         self.allowed_domains = [self.domain]
-
 
         AliSpider.rules = [
             Rule(SeleniumRequest(url=self.url, callback=self.parse, wait_time=5))
@@ -85,7 +76,7 @@ class AliSpider(scrapy.Spider):
         page_api = str(response.css('#__AER_DATA__::text').get())
         page_api = data_to_json(page_api)
         additional_parameters = take_additional_parameters(page_api)
-        product_api = page_api['widgets'][1]['children'][0]['children'][0]['children'][0]['children'][0]['children'][0]['props']
+        product_api = page_api['widgets'][2]['children'][0]['children'][0]['children'][0]['children'][0]['children'][0]['props']
         images = take_images(product_api)
         parameters = take_parameters(product_api)
         prices = take_prices(product_api)
@@ -108,6 +99,5 @@ class AliSpider(scrapy.Spider):
         product['additional_parameters'] = item['дополнительные параметры']
         product['from_whom'] = "AliExpress"
         product['user'] = self.user
-
 
         yield product
