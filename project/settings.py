@@ -185,7 +185,7 @@ CORS_ALLOW_HEADERS = (
 CORS_EXPOSE_HEADERS = [
     "content-disposition"
 ]
-#CORS_ALLOW_HEADERS = "*"
+CORS_ALLOW_HEADERS = "*"
 #CORS_ALLOWED_ORIGINS = [
   #'http://localhost:8080',
   #'http://localhost:8081',
